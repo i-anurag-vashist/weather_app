@@ -193,7 +193,7 @@ img {
 /*-- Index-Page-Styling --*/
 
 body {
-  background: url("./images/background.jpg");
+  background: url("./assets/images/background.jpg");
   background-repeat: no-repeat;
   background-attachment: fixed;
   background-position: center;
@@ -234,7 +234,7 @@ h1 {
   width: 60%;
   height: 100%;
   float: left;
-  background: url("./images/city.jpg");
+  background: url("./assets/images/city.jpg");
   background-repeat: no-repeat;
   background-size: cover;
   -webkit-background-size: cover;

@@ -1,9 +1,9 @@
 import React, { useState, useEffect, Component } from "react";
 import axios from "axios";
-import apiKeys from "./apiKeys";
+import apiKeys from "../apiKeys";
 import ReactAnimatedWeather from "react-animated-weather";
 
-function Forcast(props) {
+function Forecast(props) {
   const [query, setQuery] = useState("");
   const [error, setError] = useState("");
   const [weather, setWeather] = useState({});
@@ -11,11 +11,11 @@ function Forcast(props) {
   const search = (city) => {
     axios
       .get(
-        `${apiKeys.base}weather?q=${
-          city != "[object Object]" ? city : query
+        `${apiKeys.base}weather?q=${city != "[object Object]" ? city : query
         }&units=metric&APPID=${apiKeys.key}`
       )
       .then((response) => {
+        debugger
         setWeather(response.data);
         setQuery("");
       })
@@ -26,12 +26,6 @@ function Forcast(props) {
         setError({ message: "Not Found", query: query });
       });
   };
-  function checkTime(i) {
-    if (i < 10) {
-      i = "0" + i;
-    } // add zero in front of numbers < 10
-    return i;
-  }
 
   const defaults = {
     color: "white",
@@ -119,4 +113,4 @@ function Forcast(props) {
     </div>
   );
 }
-export default Forcast;
+export default Forecast;

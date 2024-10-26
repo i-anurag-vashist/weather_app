@@ -1,47 +1,17 @@
 import React from "react";
-import apiKeys from "./apiKeys";
 import Clock from "react-live-clock";
-import Forcast from "./forcast";
-import loader from "./images/WeatherIcons.gif";
+import Forecast from "./Forecast";
+import loader from "../assets/images/WeatherIcons.gif";
 import ReactAnimatedWeather from "react-animated-weather";
-const dateBuilder = (d) => {
-  let months = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
-  ];
-  let days = [
-    "Sunday",
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday",
-  ];
+import { getCurrentDate, getWeatherIcon } from "../helpers/helperFunctions";
+import { getWeather } from "../apiUtils";
 
-  let day = days[d.getDay()];
-  let date = d.getDate();
-  let month = months[d.getMonth()];
-  let year = d.getFullYear();
-
-  return `${day}, ${date} ${month} ${year}`;
-};
 const defaults = {
   color: "white",
   size: 112,
   animate: true,
 };
-class Weather extends React.Component {
+class LocationDetails extends React.Component {
   state = {
     lat: undefined,
     lon: undefined,
@@ -86,26 +56,14 @@ class Weather extends React.Component {
     clearInterval(this.timerID);
   }
 
-  // tick = () => {
-  //   this.getPosition()
-  //   .then((position) => {
-  //     this.getWeather(position.coords.latitude, position.coords.longitude)
-  //   })
-  //   .catch((err) => {
-  //     this.setState({ errorMessage: err.message });
-  //   });
-  // }
-
   getPosition = (options) => {
     return new Promise(function (resolve, reject) {
       navigator.geolocation.getCurrentPosition(resolve, reject, options);
     });
   };
   getWeather = async (lat, lon) => {
-    const api_call = await fetch(
-      `${apiKeys.base}weather?lat=${lat}&lon=${lon}&units=metric&APPID=${apiKeys.key}`
-    );
-    const data = await api_call.json();
+    const data = await getWeather(lat, lon);
+    debugger
     this.setState({
       lat: lat,
       lon: lon,
@@ -115,41 +73,8 @@ class Weather extends React.Component {
       humidity: data.main.humidity,
       main: data.weather[0].main,
       country: data.sys.country,
-      // sunrise: this.getTimeFromUnixTimeStamp(data.sys.sunrise),
-
-      // sunset: this.getTimeFromUnixTimeStamp(data.sys.sunset),
     });
-    switch (this.state.main) {
-      case "Haze":
-        this.setState({ icon: "CLEAR_DAY" });
-        break;
-      case "Clouds":
-        this.setState({ icon: "CLOUDY" });
-        break;
-      case "Rain":
-        this.setState({ icon: "RAIN" });
-        break;
-      case "Snow":
-        this.setState({ icon: "SNOW" });
-        break;
-      case "Dust":
-        this.setState({ icon: "WIND" });
-        break;
-      case "Drizzle":
-        this.setState({ icon: "SLEET" });
-        break;
-      case "Fog":
-        this.setState({ icon: "FOG" });
-        break;
-      case "Smoke":
-        this.setState({ icon: "FOG" });
-        break;
-      case "Tornado":
-        this.setState({ icon: "WIND" });
-        break;
-      default:
-        this.setState({ icon: "CLEAR_DAY" });
-    }
+    this.setState({ icon: getWeatherIcon(this.state.main) });
   };
 
   render() {
@@ -177,7 +102,7 @@ class Weather extends React.Component {
                 <div className="current-time">
                   <Clock format="HH:mm:ss" interval={1000} ticking={true} />
                 </div>
-                <div className="current-date">{dateBuilder(new Date())}</div>
+                <div className="current-date">{getCurrentDate()}</div>
               </div>
               <div className="temperature">
                 <p>
@@ -188,7 +113,7 @@ class Weather extends React.Component {
               </div>
             </div>
           </div>
-          <Forcast icon={this.state.icon} weather={this.state.main} />
+          <Forecast icon={this.state.icon} weather={this.state.main} />
         </React.Fragment>
       );
     } else {
@@ -208,4 +133,4 @@ class Weather extends React.Component {
   }
 }
 
-export default Weather;
+export default LocationDetails;
